@@ -1,88 +1,139 @@
-﻿Imports System.IO
-Imports System.Collections.Generic
+﻿Imports System.Drawing
+Imports System.Windows.Forms
 
 Public Class Week5Form
-    ' Maintain the class-level list for the dynamic collection demo
-    Private dynamicList As New List(Of String)
+    Inherits BaseLessonForm
+
+    ' Module-Level Constant Demonstration
+    Private Const SALES_TAX_RATE_DECIMAL As Decimal = 0.12D
 
     Private Sub Week5Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' Re-parent to the Base Form container
+        ' CRITICAL FIX: Transfer the Designer controls into the Base Form's container
+        ' This ensures your base form's UI doesn't swallow them
         If pnlContainer IsNot Nothing Then
             pnlContainer.Controls.Add(pnlInteractive)
-            pnlContainer.Controls.Add(lblLesson)
+            ' Make the panel transparent to blend with the base form and hide residual borders
+            pnlInteractive.BackColor = Color.Transparent
             pnlInteractive.BringToFront()
-            lblLesson.BringToFront()
+
+            ' Change GroupBox and Label fonts to white for visibility
+            grpCalculator.ForeColor = Color.White
+            grpConversion.ForeColor = Color.White
+            lblNum1.ForeColor = Color.White
+            lblNum2.ForeColor = Color.White
+            lblOp.ForeColor = Color.White
+            lblConvert.ForeColor = Color.White
+
+            ' Ensure inputs and buttons keep black text
+            txtNum1.ForeColor = Color.Black
+            txtNum2.ForeColor = Color.Black
+            txtConvert.ForeColor = Color.Black
+            cmbOperator.ForeColor = Color.Black
+            btnCalculate.ForeColor = Color.Black
+            btnFormatCurrency.ForeColor = Color.Black
+            btnFormatNumber.ForeColor = Color.Black
         End If
+
+        ' Populate Calculator Operators
+        cmbOperator.Items.Clear()
+        cmbOperator.Items.AddRange({"+ (Addition)", "- (Subtraction)", "* (Multiplication)", "/ (Division)", "\ (Integer Division)", "Mod (Modulus)", "^ (Exponentiation)"})
+        cmbOperator.SelectedIndex = 0
     End Sub
 
-    ' --- 1. Dynamic List Demo ---
-    Private Sub btnList_Click(sender As Object, e As EventArgs) Handles btnList.Click
-        If txtInput.Text.Trim() <> "" Then
-            dynamicList.Add(txtInput.Text)
-            lblOutput.ForeColor = Color.Cyan
-            lblOutput.Text = $"[List Updated]{vbCrLf}Added: {txtInput.Text}{vbCrLf}Total items in List: {dynamicList.Count}"
-            txtInput.Clear()
+    ' ==========================================
+    ' TOPIC 1: THE ARITHMETIC CALCULATOR
+    ' ==========================================
+    Private Sub btnCalculate_Click(sender As Object, e As EventArgs) Handles btnCalculate.Click
+        ' Local Variables demonstrating Scope and Data Types
+        Dim num1 As Double
+        Dim num2 As Double
+        Dim result As Double
+        Dim intResult As Integer
+
+        ' Explicit Conversion using Parse
+        If Double.TryParse(txtNum1.Text, num1) AndAlso Double.TryParse(txtNum2.Text, num2) Then
+            Dim opSelection As String = cmbOperator.SelectedItem.ToString()
+            Dim outputStr As String = ""
+
+            Try
+                Select Case opSelection
+                    Case "+ (Addition)"
+                        result = num1 + num2
+                        outputStr = $"{num1} + {num2} = {result}"
+                    Case "- (Subtraction)"
+                        result = num1 - num2
+                        outputStr = $"{num1} - {num2} = {result}"
+                    Case "* (Multiplication)"
+                        result = num1 * num2
+                        outputStr = $"{num1} * {num2} = {result}"
+                    Case "/ (Division)"
+                        If num2 = 0 Then Throw New DivideByZeroException()
+                        result = num1 / num2
+                        outputStr = $"{num1} / {num2} = {result}"
+                    Case "\ (Integer Division)"
+                        If num2 = 0 Then Throw New DivideByZeroException()
+                        ' Integer Division discards the remainder
+                        intResult = CInt(num1) \ CInt(num2)
+                        outputStr = $"{CInt(num1)} \ {CInt(num2)} = {intResult} (Integer Result)"
+                    Case "Mod (Modulus)"
+                        If num2 = 0 Then Throw New DivideByZeroException()
+                        ' Modulus returns the remainder
+                        result = num1 Mod num2
+                        outputStr = $"{num1} Mod {num2} = {result} (Remainder)"
+                    Case "^ (Exponentiation)"
+                        result = num1 ^ num2
+                        outputStr = $"{num1} ^ {num2} = {result}"
+                End Select
+
+                lblOutput.ForeColor = Color.Lime
+                lblOutput.Text = $"[Calculation Success]{vbCrLf}{outputStr}"
+            Catch ex As DivideByZeroException
+                lblOutput.ForeColor = Color.Tomato
+                lblOutput.Text = "Error: Cannot divide by zero."
+            End Try
         Else
             lblOutput.ForeColor = Color.Tomato
-            lblOutput.Text = "Error: Enter text for the List."
+            lblOutput.Text = "Data Type Error: Please enter valid numbers."
         End If
     End Sub
 
-    ' --- 2. File I/O Demo ---
-    Private Sub btnFile_Click(sender As Object, e As EventArgs) Handles btnFile.Click
-        Dim path As String = "demo.txt"
-        Try
-            Dim textToSave As String = If(txtInput.Text.Trim() = "", "Default Text - No Input Provided", txtInput.Text)
-            File.WriteAllText(path, textToSave)
+    ' ==========================================
+    ' TOPIC 2: DATA CONVERSION & FORMATTING
+    ' ==========================================
+    Private Sub btnFormatCurrency_Click(sender As Object, e As EventArgs) Handles btnFormatCurrency.Click
+        Dim inputVal As Decimal
+        ' Using Parse method to convert String to Decimal
+        If Decimal.TryParse(txtConvert.Text, inputVal) Then
+            ' Applying Assignment Operator (+=) and Constants
+            Dim taxAmount As Decimal = inputVal * SALES_TAX_RATE_DECIMAL
+            Dim total As Decimal = inputVal
+            total += taxAmount
 
-            Dim readText As String = File.ReadAllText(path)
+            lblOutput.ForeColor = Color.Cyan
+            lblOutput.Text = $"[Conversion & Formatting]{vbCrLf}" &
+                             $"Base: {inputVal.ToString("C2")}{vbCrLf}" &
+                             $"Tax (12%): {taxAmount.ToString("C2")}{vbCrLf}" &
+                             $"Total: {total.ToString("C2")}"
+        Else
+            lblOutput.ForeColor = Color.Tomato
+            lblOutput.Text = "Parse Error: Invalid Decimal input."
+        End If
+    End Sub
+
+    Private Sub btnFormatNumber_Click(sender As Object, e As EventArgs) Handles btnFormatNumber.Click
+        Dim inputVal As Double
+        If Double.TryParse(txtConvert.Text, inputVal) Then
+            ' Explicitly casting Double to Integer
+            Dim roundedInt As Integer = Convert.ToInt32(inputVal)
+
             lblOutput.ForeColor = Color.Yellow
-            lblOutput.Text = $"[File I/O Success]{vbCrLf}Saved to {path}{vbCrLf}Read Data: '{readText}'"
-        Catch ex As Exception
+            lblOutput.Text = $"[Data Types & Precision]{vbCrLf}" &
+                             $"Original Double: {inputVal}{vbCrLf}" &
+                             $"Formatted (N2): {inputVal.ToString("N2")}{vbCrLf}" &
+                             $"Cast to Integer: {roundedInt.ToString("N0")}"
+        Else
             lblOutput.ForeColor = Color.Tomato
-            lblOutput.Text = $"File Error: {ex.Message}"
-        End Try
-    End Sub
-
-    ' --- 3. Dynamic Array Demo ---
-    Private Sub btnArray_Click(sender As Object, e As EventArgs) Handles btnArray.Click
-        Dim inputString As String = txtArray.Text.Trim()
-
-        If String.IsNullOrWhiteSpace(inputString) Then
-            lblOutput.ForeColor = Color.Tomato
-            lblOutput.Text = "Error: Please enter numbers separated by commas."
-            Return
+            lblOutput.Text = "Parse Error: Invalid numeric input."
         End If
-
-        ' Split the string by commas to dynamically create an array
-        Dim stringArray() As String = inputString.Split(","c)
-        Dim validNumbers As New List(Of Integer)
-        Dim sum As Integer = 0
-
-        ' TryParse handles edge cases where the user accidentally types letters (e.g., "10, apple, 30")
-        For Each item In stringArray
-            Dim parsedNum As Integer
-            If Integer.TryParse(item.Trim(), parsedNum) Then
-                validNumbers.Add(parsedNum)
-                sum += parsedNum
-            End If
-        Next
-
-        ' Convert back to a fixed array to demonstrate array properties
-        Dim finalArray() As Integer = validNumbers.ToArray()
-
-        lblOutput.ForeColor = Color.Lime
-        lblOutput.Text = $"[Array Constructed]{vbCrLf}Valid Elements Captured: {finalArray.Length}{vbCrLf}Sum calculated via loop: {sum}"
-    End Sub
-
-    ' --- 4. Dynamic Math Calculations ---
-    Private Sub btnMath_Click(sender As Object, e As EventArgs) Handles btnMath.Click
-        Dim baseVal As Double = CDbl(numBase.Value)
-        Dim expVal As Double = CDbl(numExp.Value)
-
-        Dim result As Double = Math.Pow(baseVal, expVal)
-
-        lblOutput.ForeColor = Color.Cyan
-        lblOutput.Text = $"[Math Calculation]{vbCrLf}Math.Pow({baseVal}, {expVal}) = {result}{vbCrLf}({baseVal} raised to the power of {expVal})"
     End Sub
 End Class

@@ -117,4 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="lblLesson.Text" xml:space="preserve">
+    <value>Week 7 - Array Manipulation
+
+Arrays have a fixed size when created, but you can resize them dynamically.
+
+• ReDim Preserve: Resizes an array while keeping its existing data.
+• Array.IndexOf(): Quickly searches the array to find the index of a specific item. Returns -1 if not found.
+
+Multidimensional Arrays:
+You can create arrays with rows and columns (2D), useful for grids, chests, or coordinates.
+
+Dim chest(1, 1) As String
+chest(0,0) = "Wood"
+chest(0,1) = "Iron"</value>
+  </data>
 </root>

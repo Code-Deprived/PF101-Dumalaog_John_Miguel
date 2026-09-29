@@ -2,12 +2,10 @@
     Private Const TAX_RATE As Decimal = 0.12D
 
     Private Sub Week6Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' 1. Set default values to prevent startup crashes
-        cmbTruthA.SelectedIndex = 0
-        cmbTruthB.SelectedIndex = 0
+        ' 1. Set default value to prevent startup crashes
         cmbTruthOp.SelectedIndex = 0
 
-        ' 2. CRITICAL FIX: Transfer the Designer controls into the Base Form's container
+        ' 2. Transfer the Designer controls into the Base Form's container
         ' This ensures your base form's "Lesson Reviewer" UI doesn't swallow them
         If pnlContainer IsNot Nothing Then
             pnlContainer.Controls.Add(pnlInteractive)
@@ -64,34 +62,42 @@
     End Sub
 
     Private Sub btnTruth_Click(sender As Object, e As EventArgs) Handles btnTruth.Click
-        Dim valA As Boolean = Boolean.Parse(cmbTruthA.SelectedItem.ToString())
-        Dim valB As Boolean = Boolean.Parse(cmbTruthB.SelectedItem.ToString())
-        Dim operatorSelected As String = cmbTruthOp.SelectedItem.ToString()
-        Dim result As Boolean
-        Dim operationString As String = ""
-
-        Select Case operatorSelected
-            Case "AND"
-                result = valA And valB
-                operationString = $"{valA} AND {valB}"
-            Case "OR"
-                result = valA Or valB
-                operationString = $"{valA} OR {valB}"
-            Case "XOR"
-                result = valA Xor valB
-                operationString = $"{valA} XOR {valB}"
-            Case "NOT (A)"
-                result = Not valA
-                operationString = $"NOT {valA}"
-        End Select
-
-        lblOutput.ForeColor = If(result, Color.Lime, Color.Tomato)
-        lblOutput.Text = $"Truth Table Execution:{vbCrLf}{operationString} = {result}"
-    End Sub
-
-    Private Sub cmbTruthOp_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbTruthOp.SelectedIndexChanged
-        If cmbTruthOp.SelectedItem IsNot Nothing Then
-            cmbTruthB.Enabled = (cmbTruthOp.SelectedItem.ToString() <> "NOT (A)")
+        If cmbTruthOp.SelectedItem Is Nothing Then
+            lblOutput.Text = "Please select an operator."
+            Return
         End If
+
+        Dim operatorSelected As String = cmbTruthOp.SelectedItem.ToString()
+        Dim tableOutput As String = ""
+
+        ' Use vbTab for column alignment since MessageBox uses a variable-width font
+        If operatorSelected = "NOT (A)" Then
+            tableOutput = "A" & vbTab & "| NOT A" & vbCrLf &
+                          "-------------------" & vbCrLf &
+                          "True" & vbTab & "| False" & vbCrLf &
+                          "False" & vbTab & "| True"
+        Else
+            tableOutput = "A" & vbTab & "| B" & vbTab & $"| A {operatorSelected} B" & vbCrLf &
+                          "----------------------------------------" & vbCrLf
+
+            ' Generate combinations
+            For Each a As Boolean In {True, False}
+                For Each b As Boolean In {True, False}
+                    Dim result As Boolean
+                    Select Case operatorSelected
+                        Case "AND" : result = a And b
+                        Case "OR" : result = a Or b
+                        Case "XOR" : result = a Xor b
+                    End Select
+                    tableOutput &= $"{a}" & vbTab & $"| {b}" & vbTab & $"| {result}{vbCrLf}"
+                Next
+            Next
+        End If
+
+        ' Update the label to show status, then display the pop-up
+        lblOutput.ForeColor = Color.Cyan
+        lblOutput.Text = $"Generating {operatorSelected} Truth Table..."
+
+        MessageBox.Show(tableOutput, $"{operatorSelected} Truth Table", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 End Class

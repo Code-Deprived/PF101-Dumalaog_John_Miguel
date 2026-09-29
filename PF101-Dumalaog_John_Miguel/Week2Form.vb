@@ -8,7 +8,7 @@ Public Class Week2Form
     Private bankAcc As New BankAccount()
 
     ' UI Components
-    Private mainMenuStrip As New MenuStrip()
+    Private MainMenuStrip As New MenuStrip()
     Private pnlDemo As New Panel()
     Private pnlReviewer As New Panel()
 

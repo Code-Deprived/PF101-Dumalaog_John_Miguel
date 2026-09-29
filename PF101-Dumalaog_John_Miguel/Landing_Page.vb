@@ -3,7 +3,7 @@ Imports System.Drawing.Drawing2D
 Imports System.IO
 Imports System.Windows.Forms
 
-Public Class Landing_Page
+Public Class Landing_page
     Private ReadOnly lessonData As New Dictionary(Of Label, (Title As String, Subtext As String))
     Private ReadOnly hoveredControls As New HashSet(Of Control)()
 
@@ -24,15 +24,19 @@ Public Class Landing_Page
         pnlMainMenu.Visible = True
         pnlLessonSelect.Visible = False
 
-        ' Map Lesson Metadata
+        ' Map Lesson Metadata (ADDED WEEK 7, WEEK 8, AND MIDTERMS)
         lessonData(lblWeek2) = ("Week 2 - Intro to OOP", "Classes   Objects   Encapsulation")
         lessonData(lblWeek3) = ("Week 3 - Getting Started", "Syntax   Variables   Data Types")
         lessonData(lblWeek4) = ("Week 4 - Designing Interfaces", "WinForms   Controls   Layouts")
         lessonData(lblWeek5) = ("Week 5 - Data Handling", "Arrays   Collections   File I/O")
         lessonData(lblWeek6) = ("Week 6 - Control Structures", "If/Else   Select Case   Loops")
+        lessonData(lblWeek7) = ("Week 7 - Arrays", "Single   Multi-Dimensional   Sorting")
+        lessonData(lblWeek8) = ("Week 8 - Dialog Controls", "Open   Save   Font   Color Dialogs")
+        lessonData(lblMidterm) = ("Midterm Project", "Animations   Game Loop   Graphics")
 
         ' Prepare Text & Transparencies
-        Dim allLabels As Label() = {lblLessons, lblSBIT1A, lblHelp, lblExit, lblSelectHeader, btnBack, lblWeek2, lblWeek3, lblWeek4, lblWeek5, lblWeek6}
+        Dim allLabels As Label() = {lblLessons, lblSBIT1A, lblHelp, lblExit, lblSelectHeader, btnBack,
+                                    lblWeek2, lblWeek3, lblWeek4, lblWeek5, lblWeek6, lblWeek7, lblWeek8, lblMidterm}
         For Each lbl In allLabels
             lbl.BackColor = Color.Transparent
             lbl.Text = ""
@@ -44,7 +48,7 @@ Public Class Landing_Page
 
         InitSplashText()
 
-        ' --- NEW: Play background music safely ---
+        ' Play background music safely
         Dim audioPath As String = System.IO.Path.Combine(Application.StartupPath, "Terraria_Music.wav")
         If System.IO.File.Exists(audioPath) Then
             My.Computer.Audio.Play(audioPath, AudioPlayMode.BackgroundLoop)
@@ -125,7 +129,7 @@ Public Class Landing_Page
         DrawHeaderBox(e.Graphics, btnBack.ClientRectangle, GetControlText(btnBack), 18.0F)
     End Sub
 
-    Private Sub DrawLessonSlot(sender As Object, e As PaintEventArgs) Handles lblWeek2.Paint, lblWeek3.Paint, lblWeek4.Paint, lblWeek5.Paint, lblWeek6.Paint
+    Private Sub DrawLessonSlot(sender As Object, e As PaintEventArgs) Handles lblWeek2.Paint, lblWeek3.Paint, lblWeek4.Paint, lblWeek5.Paint, lblWeek6.Paint, lblWeek7.Paint, lblWeek8.Paint, lblMidterm.Paint
         Dim lbl As Label = CType(sender, Label)
         If Not lessonData.ContainsKey(lbl) Then Return
 
@@ -188,20 +192,22 @@ Public Class Landing_Page
         CType(sender, Label).ForeColor = Color.White
     End Sub
 
-    Private Sub LessonHoverEnter(sender As Object, e As EventArgs) Handles lblWeek2.MouseEnter, lblWeek3.MouseEnter, lblWeek4.MouseEnter, lblWeek5.MouseEnter, lblWeek6.MouseEnter
+    Private Sub LessonHoverEnter(sender As Object, e As EventArgs) Handles lblWeek2.MouseEnter, lblWeek3.MouseEnter, lblWeek4.MouseEnter, lblWeek5.MouseEnter, lblWeek6.MouseEnter, lblWeek7.MouseEnter, lblWeek8.MouseEnter, lblMidterm.MouseEnter
         hoveredControls.Add(CType(sender, Label))
         CType(sender, Label).Invalidate()
     End Sub
 
-    Private Sub LessonHoverLeave(sender As Object, e As EventArgs) Handles lblWeek2.MouseLeave, lblWeek3.MouseLeave, lblWeek4.MouseLeave, lblWeek5.MouseLeave, lblWeek6.MouseLeave
+    Private Sub LessonHoverLeave(sender As Object, e As EventArgs) Handles lblWeek2.MouseLeave, lblWeek3.MouseLeave, lblWeek4.MouseLeave, lblWeek5.MouseLeave, lblWeek6.MouseLeave, lblWeek7.MouseLeave, lblWeek8.MouseLeave, lblMidterm.MouseLeave
         hoveredControls.Remove(CType(sender, Label))
         CType(sender, Label).Invalidate()
     End Sub
 
+    ' CRITICAL FIX: Ensure the landing page hides when opening a lesson and unhides when closing it.
     Private Sub OpenLesson(Of T As {Form, New})()
-        Using f As New T()
-            f.ShowDialog(Me)
-        End Using
+        Dim frm As New T()
+        AddHandler frm.FormClosed, Sub() Me.Show()
+        frm.Show()
+        Me.Hide()
     End Sub
 
     Private Sub lblWeek2_Click(sender As Object, e As EventArgs) Handles lblWeek2.Click
@@ -222,5 +228,17 @@ Public Class Landing_Page
 
     Private Sub lblWeek6_Click(sender As Object, e As EventArgs) Handles lblWeek6.Click
         OpenLesson(Of Week6Form)()
+    End Sub
+
+    Private Sub lblWeek7_Click(sender As Object, e As EventArgs) Handles lblWeek7.Click
+        OpenLesson(Of Week7Form)()
+    End Sub
+
+    Private Sub lblWeek8_Click(sender As Object, e As EventArgs) Handles lblWeek8.Click
+        OpenLesson(Of Week8Form)()
+    End Sub
+
+    Private Sub lblMidterm_Click(sender As Object, e As EventArgs) Handles lblMidterm.Click
+        OpenLesson(Of MidtermProjectAnimationForm)()
     End Sub
 End Class

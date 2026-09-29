@@ -26,6 +26,9 @@ Partial Class Landing_page
         pnlLessonSelect = New Panel()
         btnBack = New Label()
         pnlListContainer = New Panel()
+        lblMidterm = New Label()
+        lblWeek8 = New Label()
+        lblWeek7 = New Label()
         lblWeek6 = New Label()
         lblWeek5 = New Label()
         lblWeek4 = New Label()
@@ -130,6 +133,10 @@ Partial Class Landing_page
         ' pnlListContainer
         '
         pnlListContainer.BackColor = Color.Transparent
+        pnlListContainer.AutoScroll = True
+        pnlListContainer.Controls.Add(lblMidterm)
+        pnlListContainer.Controls.Add(lblWeek8)
+        pnlListContainer.Controls.Add(lblWeek7)
         pnlListContainer.Controls.Add(lblWeek6)
         pnlListContainer.Controls.Add(lblWeek5)
         pnlListContainer.Controls.Add(lblWeek4)
@@ -180,6 +187,30 @@ Partial Class Landing_page
         lblWeek6.Name = "lblWeek6"
         lblWeek6.Size = New Size(574, 68)
         lblWeek6.TabIndex = 4
+        '
+        ' lblWeek7
+        '
+        lblWeek7.Cursor = Cursors.Hand
+        lblWeek7.Location = New Point(23, 392)
+        lblWeek7.Name = "lblWeek7"
+        lblWeek7.Size = New Size(574, 68)
+        lblWeek7.TabIndex = 5
+        '
+        ' lblWeek8
+        '
+        lblWeek8.Cursor = Cursors.Hand
+        lblWeek8.Location = New Point(23, 468)
+        lblWeek8.Name = "lblWeek8"
+        lblWeek8.Size = New Size(574, 68)
+        lblWeek8.TabIndex = 6
+        '
+        ' lblMidterm
+        '
+        lblMidterm.Cursor = Cursors.Hand
+        lblMidterm.Location = New Point(23, 544)
+        lblMidterm.Name = "lblMidterm"
+        lblMidterm.Size = New Size(574, 68)
+        lblMidterm.TabIndex = 7
         '
         ' btnBack
         '
@@ -234,6 +265,9 @@ Partial Class Landing_page
     Friend WithEvents pnlLessonSelect As Panel
     Friend WithEvents btnBack As Label
     Friend WithEvents pnlListContainer As Panel
+    Friend WithEvents lblMidterm As Label
+    Friend WithEvents lblWeek8 As Label
+    Friend WithEvents lblWeek7 As Label
     Friend WithEvents lblWeek6 As Label
     Friend WithEvents lblWeek5 As Label
     Friend WithEvents lblWeek4 As Label
