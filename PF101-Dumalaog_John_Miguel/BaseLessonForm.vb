@@ -9,6 +9,8 @@ Public Class BaseLessonForm
     Protected ReadOnly pnlContainer As New DoubleBufferedPanel()
 
     Public Sub New()
+        InitializeComponent()
+
         ' Disable DPI font distortion
         Me.AutoScaleMode = AutoScaleMode.None
         Me.DoubleBuffered = True

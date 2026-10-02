@@ -20,6 +20,10 @@ Partial Class MidtermProjectAnimationForm
         components = New ComponentModel.Container()
         TabControl1 = New TabControl()
         TabPage1 = New TabPage()
+        pnlVictory = New Panel()
+        btnNextLevel = New Button()
+        pnlGameOver = New Panel()
+        btnRestart = New Button()
         lblGame1Status = New Label()
         btnMoveBoat = New Button()
         btnReset1 = New Button()
@@ -30,6 +34,8 @@ Partial Class MidtermProjectAnimationForm
         tmrBoat = New Timer(components)
         TabControl1.SuspendLayout()
         TabPage1.SuspendLayout()
+        pnlVictory.SuspendLayout()
+        pnlGameOver.SuspendLayout()
         pnlRiver.SuspendLayout()
         SuspendLayout()
         ' 
@@ -47,6 +53,8 @@ Partial Class MidtermProjectAnimationForm
         ' TabPage1
         ' 
         TabPage1.BackColor = Color.FromArgb(CByte(20), CByte(40), CByte(60))
+        TabPage1.Controls.Add(pnlVictory)
+        TabPage1.Controls.Add(pnlGameOver)
         TabPage1.Controls.Add(lblGame1Status)
         TabPage1.Controls.Add(btnMoveBoat)
         TabPage1.Controls.Add(btnReset1)
@@ -60,6 +68,54 @@ Partial Class MidtermProjectAnimationForm
         TabPage1.Size = New Size(945, 582)
         TabPage1.TabIndex = 0
         TabPage1.Text = "Level 1 (Priests n Devils)"
+        ' 
+        ' pnlVictory
+        ' 
+        pnlVictory.BackColor = Color.Transparent
+        pnlVictory.Controls.Add(btnNextLevel)
+        pnlVictory.Location = New Point(320, 60)
+        pnlVictory.Name = "pnlVictory"
+        pnlVictory.Size = New Size(300, 200)
+        pnlVictory.TabIndex = 6
+        pnlVictory.Visible = False
+        ' 
+        ' btnNextLevel
+        ' 
+        btnNextLevel.BackColor = Color.Transparent
+        btnNextLevel.Cursor = Cursors.Hand
+        btnNextLevel.FlatStyle = FlatStyle.Flat
+        btnNextLevel.Font = New Font("Segoe UI", 10.0F, FontStyle.Bold)
+        btnNextLevel.ForeColor = Color.DarkViolet
+        btnNextLevel.Location = New Point(75, 90)
+        btnNextLevel.Name = "btnNextLevel"
+        btnNextLevel.Size = New Size(150, 40)
+        btnNextLevel.TabIndex = 0
+        btnNextLevel.Text = "Proceed to Vault"
+        btnNextLevel.UseVisualStyleBackColor = False
+        ' 
+        ' pnlGameOver
+        ' 
+        pnlGameOver.BackColor = Color.FromArgb(CByte(60), CByte(20), CByte(20))
+        pnlGameOver.Controls.Add(btnRestart)
+        pnlGameOver.Location = New Point(320, 60)
+        pnlGameOver.Name = "pnlGameOver"
+        pnlGameOver.Size = New Size(300, 200)
+        pnlGameOver.TabIndex = 7
+        pnlGameOver.Visible = False
+        ' 
+        ' btnRestart
+        ' 
+        btnRestart.BackColor = Color.Maroon
+        btnRestart.Cursor = Cursors.Hand
+        btnRestart.FlatStyle = FlatStyle.Flat
+        btnRestart.Font = New Font("Segoe UI", 10.0F, FontStyle.Bold)
+        btnRestart.ForeColor = Color.White
+        btnRestart.Location = New Point(75, 140)
+        btnRestart.Name = "btnRestart"
+        btnRestart.Size = New Size(150, 40)
+        btnRestart.TabIndex = 0
+        btnRestart.Text = "Try Again"
+        btnRestart.UseVisualStyleBackColor = False
         ' 
         ' lblGame1Status
         ' 
@@ -161,6 +217,8 @@ Partial Class MidtermProjectAnimationForm
         TabControl1.ResumeLayout(False)
         TabPage1.ResumeLayout(False)
         TabPage1.PerformLayout()
+        pnlVictory.ResumeLayout(False)
+        pnlGameOver.ResumeLayout(False)
         pnlRiver.ResumeLayout(False)
         ResumeLayout(False)
 
@@ -176,4 +234,10 @@ Partial Class MidtermProjectAnimationForm
     Friend WithEvents btnReset1 As Button
     Friend WithEvents lblGame1Status As Label
     Friend WithEvents tmrBoat As Timer
+
+    ' Newly Added Controls for Panels
+    Friend WithEvents pnlVictory As Panel
+    Friend WithEvents btnNextLevel As Button
+    Friend WithEvents pnlGameOver As Panel
+    Friend WithEvents btnRestart As Button
 End Class

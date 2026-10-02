@@ -8,7 +8,7 @@ Public Class Week2Form
     Private bankAcc As New BankAccount()
 
     ' UI Components
-    Private MainMenuStrip As New MenuStrip()
+    Private appMenuStrip As New MenuStrip()
     Private pnlDemo As New Panel()
     Private pnlReviewer As New Panel()
 
@@ -36,8 +36,8 @@ Public Class Week2Form
     End Sub
 
     Private Sub SetupMenuStrip()
-        mainMenuStrip.BackColor = Color.Black
-        mainMenuStrip.ForeColor = Color.White
+        appMenuStrip.BackColor = Color.Black
+        appMenuStrip.ForeColor = Color.White
 
         Dim mnuSBIT2A As New ToolStripMenuItem("SBIT2A")
         Dim mnuHelp As New ToolStripMenuItem("Help")
@@ -52,10 +52,10 @@ Public Class Week2Form
         Dim itemInterface As New ToolStripMenuItem("Interface", Nothing, Sub() LoadSubTopic("Interface"))
 
         mnuWeek2.DropDownItems.AddRange({itemClasses, itemEncapsulation, itemInheritance, itemPolymorphism, itemInterface})
-        mainMenuStrip.Items.AddRange({mnuSBIT2A, mnuHelp, mnuExit, mnuWeek2})
+        appMenuStrip.Items.AddRange({mnuSBIT2A, mnuHelp, mnuExit, mnuWeek2})
 
-        Me.mainMenuStrip = mainMenuStrip
-        Me.Controls.Add(mainMenuStrip)
+        Me.MainMenuStrip = appMenuStrip
+        Me.Controls.Add(appMenuStrip)
     End Sub
 
     Public Sub LoadSubTopic(topic As String)

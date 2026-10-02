@@ -47,9 +47,9 @@ Partial Public Class MidtermProjectAnimationForm
     Private jumpDest As Point
     Private activeJumpFrames As Image()
     Private jumpFrameIndex As Integer = 0
-    Private jumpTickCounter As Integer = 0 ' New counter to smooth out frame speed
+    Private jumpTickCounter As Integer = 0
 
-    ' ADD THESE for the Parabolic Jump Arc
+    ' --- PARABOLIC JUMP ARC ---
     Private jumpStartX As Integer
     Private jumpStartY As Integer
     Private jumpProgress As Double = 0.0
@@ -74,12 +74,10 @@ Partial Public Class MidtermProjectAnimationForm
     End Sub
 
     Private Sub FixLayoutSizes()
-        ' Enable wrapping so all 6 characters fit on the shores
         flpLeftShore.WrapContents = True
         flpRightShore.WrapContents = True
         flpBoat.WrapContents = False
 
-        ' Expand the height so wrapped characters aren't cropped
         flpLeftShore.Size = New Size(320, 240)
         flpRightShore.Size = New Size(320, 240)
         flpBoat.Size = New Size(150, 95)
@@ -114,6 +112,16 @@ Partial Public Class MidtermProjectAnimationForm
             flpBoat.BackgroundImage = Image.FromFile(boatPath)
             flpBoat.BackgroundImageLayout = ImageLayout.Stretch
             flpBoat.BackColor = Color.Transparent
+        End If
+
+        ' Dynamically load your new states.png file for the panels
+        Dim statesPath As String = IO.Path.Combine(path, "states.png")
+        If IO.File.Exists(statesPath) Then
+            Dim statesImg = Image.FromFile(statesPath)
+            pnlVictory.BackgroundImage = statesImg
+            pnlVictory.BackgroundImageLayout = ImageLayout.Zoom
+            pnlGameOver.BackgroundImage = statesImg
+            pnlGameOver.BackgroundImageLayout = ImageLayout.Zoom
         End If
     End Sub
 
@@ -186,6 +194,10 @@ Partial Public Class MidtermProjectAnimationForm
         tmrApproach.Stop()
         tmrIdle.Start()
 
+        ' Hide Panels on Reset
+        pnlGameOver.Visible = False
+        pnlVictory.Visible = False
+
         isAnimating = False
         isGameOver = False
         isJumping = False
@@ -247,7 +259,7 @@ Partial Public Class MidtermProjectAnimationForm
 
         isJumping = True
         jumpPic = pic
-        jumpTargetPanel = target ' Bind the target panel so we know where to drop them
+        jumpTargetPanel = target
         jumpTickCounter = 0
 
         Dim startScreenPt = pic.Parent.PointToScreen(pic.Location)
@@ -255,11 +267,9 @@ Partial Public Class MidtermProjectAnimationForm
         Dim destScreenPt = target.PointToScreen(New Point(target.Width \ 2, target.Height \ 2))
         jumpDest = TabPage1.PointToClient(destScreenPt)
 
-        ' Center the destination using standard character dimensions
         jumpDest.X -= (CharW \ 2)
         jumpDest.Y -= (CharH \ 2)
 
-        ' Initialize Jump Arc Variables
         jumpStartX = startLoc.X
         jumpStartY = startLoc.Y
         jumpProgress = 0.0
@@ -277,7 +287,6 @@ Partial Public Class MidtermProjectAnimationForm
         If pic.Tag.ToString() = "Priest" Then
             activeJumpFrames = priestJumpFrames
         Else
-            ' FIX: Swapped devilJumpFrames and devilJumpFramesFlipped so they face the right way
             activeJumpFrames = If(isJumpingRight, devilJumpFrames, devilJumpFramesFlipped)
         End If
 
@@ -287,11 +296,9 @@ Partial Public Class MidtermProjectAnimationForm
     End Sub
 
     Private Sub tmrJump_Tick(sender As Object, e As EventArgs) Handles tmrJump.Tick
-        ' Increase progress (Controls jump speed. Higher = faster)
         jumpProgress += 0.08
 
         If jumpProgress >= 1.0 Then
-            ' Finish the jump
             jumpProgress = 1.0
             tmrJump.Stop()
 
@@ -306,19 +313,15 @@ Partial Public Class MidtermProjectAnimationForm
             isJumping = False
             CheckWinLoss()
         Else
-            ' Calculate linear X/Y position over time (Lerp)
             Dim currentX As Integer = CInt(jumpStartX + (jumpDest.X - jumpStartX) * jumpProgress)
             Dim baseCurrentY As Integer = CInt(jumpStartY + (jumpDest.Y - jumpStartY) * jumpProgress)
 
-            ' Calculate Parabolic Arc (peaks at jumpProgress = 0.5)
-            Dim arcHeight As Integer = 80 ' Max pixels high they will hop
+            Dim arcHeight As Integer = 80
             Dim arcOffset As Integer = CInt(4 * arcHeight * jumpProgress * (1.0 - jumpProgress))
 
-            ' Apply X and Arc-adjusted Y 
             jumpPic.Left = currentX
             jumpPic.Top = baseCurrentY - arcOffset
 
-            ' Throttle visual frame speed
             jumpTickCounter += 1
             If jumpTickCounter Mod 3 = 0 Then
                 jumpFrameIndex = (jumpFrameIndex + 1) Mod 8
@@ -395,7 +398,9 @@ Partial Public Class MidtermProjectAnimationForm
             gameTimer.Stop()
             isGameOver = True
             btnMoveBoat.Enabled = False
-            MessageBox.Show("Time's up! Failed. Try Again", "Game Over")
+
+            pnlGameOver.Visible = True
+            pnlGameOver.BringToFront()
         End If
     End Sub
 
@@ -420,7 +425,9 @@ Partial Public Class MidtermProjectAnimationForm
             isGameOver = True
             btnMoveBoat.Enabled = False
             lblGame1Status.ForeColor = Color.Lime
-            MessageBox.Show("Well Done!", "You Win!")
+
+            pnlVictory.Visible = True
+            pnlVictory.BringToFront()
         End If
     End Sub
 
@@ -445,7 +452,8 @@ Partial Public Class MidtermProjectAnimationForm
         Next
 
         If vicPic Is Nothing OrElse atkPic Is Nothing Then
-            MessageBox.Show("Failed. Try Again", "Game Over")
+            pnlGameOver.Visible = True
+            pnlGameOver.BringToFront()
             Return
         End If
 
@@ -515,7 +523,8 @@ Partial Public Class MidtermProjectAnimationForm
     Private Sub tmrDeath_Tick(sender As Object, e As EventArgs) Handles tmrDeath.Tick
         If currentDeathFrame >= 8 Then
             tmrDeath.Stop()
-            MessageBox.Show("Failed. Try Again", "Game Over")
+            pnlGameOver.Visible = True
+            pnlGameOver.BringToFront()
             Return
         End If
 
@@ -540,4 +549,19 @@ Partial Public Class MidtermProjectAnimationForm
         Next
         Return count
     End Function
+
+    ' --- NEW PANEL BUTTON HANDLERS ---
+    Private Sub btnRestart_Click(sender As Object, e As EventArgs) Handles btnRestart.Click
+        ResetGame()
+    End Sub
+
+    Private Sub btnNextLevel_Click(sender As Object, e As EventArgs) Handles btnNextLevel.Click
+        Dim level2 As New Level2Form()
+
+        ' This tells the hidden Level 1 form to close completely when Level 2 is closed
+        AddHandler level2.FormClosed, Sub(s, args) Me.Close()
+
+        level2.Show()
+        Me.Hide()
+    End Sub
 End Class
